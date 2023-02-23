@@ -96,26 +96,12 @@ function quizCard() {
         list.appendChild(listEl);
         listEl.appendChild(label);
     }
-    var countdown = setInterval(function() { // weird bug with making time subtract faster with each click
-        if (secondsLeft <= 0 || currentQuestion >= questions.length) {
-            clearInterval(countdown);
-            secondsLeft = 0; // to make sure the timer does not go negative
-            var list = document.querySelector("#list");
-            list.style.display = "none";
-            questionHeader.innerHTML = "Game Over";
-            scoreboard();
-            document.getElementById('time').remove(); 
-            localStorage.setItem('score', score)
-        } else {
-            document.getElementById('time').innerHTML = secondsLeft + " seconds";
-        }
-        secondsLeft -= 1;
-    }, 1000);
+    
 };
 
 // answer selected functions
-function answerSelected(){ 
-    if(this.dataset.answer === questions[currentQuestion].answer) {
+function answerSelected(event){ 
+    if(event.target.dataset.answer === questions[currentQuestion].answer) {
         currentQuestion++;
         score++;
         quizCard();
@@ -129,7 +115,7 @@ function answerSelected(){
                 score = 0;
             }
         }
-        //quizCard()
+       
     }
     console.log(score); 
 }
@@ -142,15 +128,33 @@ function scoreboard() {
         val = localStorage.getItem(key);
     }
     localStorage.setItem(input.value, score);
-
+    
     total.innerHTML = "Your score has been saved as: " + input.value + ", " + score;
 }
+function setTime() {
+    var countdown = setInterval(function() { 
+    if (secondsLeft <= 0 || currentQuestion >= questions.length) {
+        clearInterval(countdown);
+        secondsLeft = 0; // to make sure the timer does not go negative
+        var list = document.querySelector("#list");
+        list.style.display = "none";
+        questionHeader.innerHTML = "Game Over";
+        scoreboard();
+        document.getElementById('time').remove(); 
+        localStorage.setItem('score', score)
+    } else {
+        document.getElementById('time').innerHTML = secondsLeft + " seconds";
+    }
+    secondsLeft -= 1;
+}, 1000);
+};
 
 // when start quiz button is clicked on this function will run. 
 startQuiz.addEventListener("click", function() {
     cardContainer.setAttribute("style", "visibility: visible")
     welcome.setAttribute("style", "display: none");
     quizCard(); 
+    setTime()
 });
 
 
